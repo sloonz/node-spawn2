@@ -1,0 +1,48 @@
+{
+  "name": "spawn2",
+  "version": "1.0.0",
+  "description": "Promisified and higher-level spawn",
+  "repository": "sloonz/node-spawn2",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/index.js",
+    "dist/index.d.ts"
+  ],
+  "keywords": [
+    "exec",
+    "child",
+    "process",
+    "execute",
+    "spawn",
+    "shell",
+    "command",
+    "promise"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc -w",
+    "doc": "perl mkdoc.pl src/index.ts > README.md",
+    "test": "tsc && tslint --project . && tsd && ava"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "get-stream": "^5.1.0",
+    "into-stream": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/get-stream": "^3.0.2",
+    "@types/into-stream": "^3.1.1",
+    "@types/node": "^12.0.2",
+    "ava": "^1.4.1",
+    "jsdoc-to-markdown": "^5.0.0",
+    "marked": "^0.6.2",
+    "tsd": "^0.7.3",
+    "tslint": "^5.16.0",
+    "typescript": "^3.4.5"
+  },
+  "tsd": {
+    "directory": "src"
+  }
+}
