@@ -1,4 +1,6 @@
 import test from "ava";
+import intoStream from "into-stream";
+
 import { communicate, execute, spawn, wait } from ".";
 
 test('spawn("true && true") should spawn a shell', async (t) => {
@@ -60,6 +62,13 @@ test("string stdin", async (t) => {
 
 	t.timeout(2000);
 	t.is(buf.compare((await execute("base64 -d", { stdin: buf.toString("base64"), encoding: null })).stdout!), 0);
+});
+
+test("passing a stream to stdin", async (t) => {
+	const stdinStream = intoStream("Hello");
+
+	t.timeout(2000);
+	t.is((await execute(["cat"], { stdin: stdinStream })).stdout!, "Hello");
 });
 
 test("using array as command, shell special characters should be escaped", async (t) => {

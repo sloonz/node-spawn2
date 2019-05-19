@@ -184,9 +184,9 @@ function maybeTrim(s: Buffer | string | null, cp: ChildProcess): Buffer | string
 ///
 /// Sends stdin to a running process, reads stdout and stderr and waits for the process to terminate.
 /// The return type of stdout and stderr is determined by the `encoding` option.
-export async function communicate(cp: (ChildProcess & { options: { encoding: null }}), stdin?: intoStream.Input):
+export async function communicate(cp: (ChildProcess & { options: { encoding: null }}), stdin?: intoStream.Input | NodeJS.ReadableStream):
 	Promise<{ stdout: Buffer | null, stderr: Buffer | null, exitCode: number | null, signalCode: string | null }>;
-export async function communicate(cp: (ChildProcess & { options: { encoding: BufferEncoding }}), stdin?: intoStream.Input):
+export async function communicate(cp: (ChildProcess & { options: { encoding: BufferEncoding }}), stdin?: intoStream.Input | NodeJS.ReadableStream):
 	Promise<{ stdout: string | null, stderr: string | null, exitCode: number | null, signalCode: string | null }>;
 export async function communicate(cp: any, stdin: any): Promise<any> {
 	const stdinPromise = new Promise<void>((resolve, reject) => {
@@ -194,7 +194,7 @@ export async function communicate(cp: any, stdin: any): Promise<any> {
 			cp.stdin.on("error", reject);
 		}
 		if(cp.stdin && stdin !== undefined) {
-			const stdinStream = intoStream(stdin);
+			const stdinStream = stdin.pipe !== undefined ? stdin : intoStream(stdin);
 			stdinStream.on("error", reject);
 			cp.stdin.on("finish", () => resolve());
 			stdinStream.pipe(cp.stdin);
@@ -229,7 +229,7 @@ export async function communicate(cp: any, stdin: any): Promise<any> {
 /// @doc-start-code
 export interface ExecuteOptions extends SpawnOptions {
 	// Provides stdin in options
-	stdin?: intoStream.Input | null;
+	stdin?: intoStream.Input | NodeJS.ReadableStream | null;
 
 	// What to do with stdout. See `options.stdio` on `child_process`
 	// Default: 'pipe'
