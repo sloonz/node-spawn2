@@ -180,7 +180,7 @@ function maybeTrim(s: Buffer | string | null, cp: ChildProcess): Buffer | string
 ///
 /// ## function communicate
 ///
-/// <code>function communicate(cp: ChildProcess, stdin?: intoStream.Input): Promise\<{ stdout: Buffer | string | null, stderr: Buffer | string | null, exitCode: number | null, signalCode: string | null }\></code>
+/// <code>function communicate(cp: ChildProcess, stdin?: intoStream.Input | RedableStream): Promise\<{ stdout: Buffer | string | null, stderr: Buffer | string | null, exitCode: number | null, signalCode: string | null }\></code>
 ///
 /// Sends stdin to a running process, reads stdout and stderr and waits for the process to terminate.
 /// The return type of stdout and stderr is determined by the `encoding` option.

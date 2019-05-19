@@ -100,7 +100,7 @@ Note that this may throws an error instead of returning if `checkExitCode` or `c
 
 ## function communicate
 
-<code>function communicate(cp: ChildProcess, stdin?: intoStream.Input): Promise\<{ stdout: Buffer | string | null, stderr: Buffer | string | null, exitCode: number | null, signalCode: string | null }\></code>
+<code>function communicate(cp: ChildProcess, stdin?: intoStream.Input | RedableStream): Promise\<{ stdout: Buffer | string | null, stderr: Buffer | string | null, exitCode: number | null, signalCode: string | null }\></code>
 
 Sends stdin to a running process, reads stdout and stderr and waits for the process to terminate.
 The return type of stdout and stderr is determined by the `encoding` option.
@@ -112,7 +112,7 @@ Additional options for `execute()`
 <pre><code>
 interface ExecuteOptions extends SpawnOptions {
 	// Provides stdin in options
-	stdin?: intoStream.Input | null;
+	stdin?: intoStream.Input | NodeJS.ReadableStream | null;
 
 	// What to do with stdout. See `options.stdio` on `child_process`
 	// Default: 'pipe'
