@@ -12,6 +12,7 @@
 ///    the callback will never be called. Exposing `exitCode` and `signalCode` escapes this pitfall.
 ///  * More convenient stdio management in common cases (reading or writing `Buffer`/`string`)
 ///  * More convenient `exitCode`/`signalCode` in common cases (throws an error in case of a non-zero exit code/non-null signal code)
+///  * Allows you to use child processes as stream `Transform` (for stream `pipe`/`pipeline`) (see: `makePipe`)
 
 import child_process from "child_process";
 import stream from "stream";
@@ -258,4 +259,76 @@ export async function execute(command: any, options?: any): Promise<any> {
 		(options && options.stderr) || "pipe",
 	];
 	return communicate(spawn(command, { stdio, ...options }), options && options.stdin);
+}
+
+class ChildProcessTransform extends stream.Duplex implements NodeJS.ReadWriteStream {
+	private stdout: NodeJS.ReadableStream;
+	private stdin: NodeJS.WritableStream;
+
+	constructor(cp: ChildProcess) {
+		super();
+
+		if(cp.stdout === null) {
+			throw new Error("stdout is not readable, cannot create transform stream");
+		}
+
+		if(cp.stdin === null) {
+			throw new Error("stdout is not writable, cannot create transform stream");
+		}
+
+		this.stdout = cp.stdout;
+		this.stdin = cp.stdin;
+
+		wait(cp).catch((err) => this.emit("error", err));
+
+		this.stdout.on("error", (err) => this.emit("error", err));
+		this.stdout.on("end", () => wait(cp).catch((e) => e).finally(() => this.push(null)));
+
+		this.stdin.on("error", (err) => this.emit("error", err));
+
+		this.stdout.on("data", (chunk) => {
+			if(!this.push(chunk)) {
+				this.stdout.pause();
+			}
+		});
+	}
+
+	/*
+	 * Writable (stdin)
+	 */
+	// tslint:disable-next-line
+	public _write(chunk: any, encoding: string, cb: (error?: Error | null) => void): void {
+		if(this.stdin.write(chunk, encoding)) {
+			cb(null);
+		} else {
+			this.stdin.once("drain", () => cb(null));
+		}
+	}
+
+	// tslint:disable-next-line
+	public _final(cb: (error?: Error | null) => void) {
+		this.stdin.end(cb);
+	}
+
+	/*
+	 * Readable (stdout)
+	 */
+	// tslint:disable-next-line
+	public _read() {
+		this.stdout.resume();
+	}
+}
+
+///
+/// ## function makePipe
+///
+/// <code>export function makePipe(cp: ChildProcess): NodeJS.ReadWriteStream</code>
+///
+/// Create a ReadWriteStream (suitable to be used by `ReadableStream.pipe()`) from child process's
+/// stdin and stdout.
+///
+/// The checkExitCode and checkSignalsCode will be used to control wether the "error" event is triggered
+/// on the stream on bad exit/signal status.
+export function makePipe(cp: ChildProcess): NodeJS.ReadWriteStream {
+	return new ChildProcessTransform(cp);
 }

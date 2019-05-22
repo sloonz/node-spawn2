@@ -1,6 +1,6 @@
 {
   "name": "spawn2",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Promisified and higher-level spawn",
   "repository": "sloonz/node-spawn2",
   "main": "dist/index.js",

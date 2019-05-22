@@ -12,6 +12,7 @@ Main differences with `child_process` are:
    the callback will never be called. Exposing `exitCode` and `signalCode` escapes this pitfall.
  * More convenient stdio management in common cases (reading or writing `Buffer`/`string`)
  * More convenient `exitCode`/`signalCode` in common cases (throws an error in case of a non-zero exit code/non-null signal code)
+ * Allows you to use child processes as stream `Transform` (for stream `pipe`/`pipeline`) (see: `makePipe`)
 
 ## class ChildProcessError
 
@@ -129,3 +130,13 @@ interface ExecuteOptions extends SpawnOptions {
 <code>function execute(command: string | string[], options: ExecuteOptions): Promise\<{ stdout: Buffer | string | null, stderr: Buffer | string | null, exitCode: number | null, signalCode: string | null }\></code>
 
 Shorthand for `execute(spawn(command, options), options.stdin)`. Closes spawned stdin if not provided so it will not wait on non-existent input.
+
+## function makePipe
+
+<code>function makePipe(cp: ChildProcess): NodeJS.ReadWriteStream</code>
+
+Create a ReadWriteStream (suitable to be used by `ReadableStream.pipe()`) from child process's
+stdin and stdout.
+
+The checkExitCode and checkSignalsCode will be used to control wether the "error" event is triggered
+on the stream on bad exit/signal status.

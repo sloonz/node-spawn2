@@ -8,7 +8,9 @@
         "indent": [true, "tabs"],
         "interface-name": [false],
         "max-line-length": [false],
-        "whitespace": [true, "check-decl", "check-operator", "check-separator", "check-type", "check-typecast"]
+        "whitespace": [true, "check-decl", "check-operator", "check-separator", "check-type", "check-typecast"],
+        "max-classes-per-file": [false],
+        "no-console": [false]
     },
     "rulesDirectory": []
 }
