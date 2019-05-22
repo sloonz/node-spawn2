@@ -16,6 +16,7 @@
 
 import child_process from "child_process";
 import stream from "stream";
+import { promisify } from "util";
 
 import getStream from "get-stream";
 import intoStream from "into-stream";
@@ -190,22 +191,16 @@ export async function communicate(cp: (ChildProcess & { options: { encoding: nul
 export async function communicate(cp: (ChildProcess & { options: { encoding: BufferEncoding }}), stdin?: intoStream.Input | NodeJS.ReadableStream):
 	Promise<{ stdout: string | null, stderr: string | null, exitCode: number | null, signalCode: string | null }>;
 export async function communicate(cp: any, stdin: any): Promise<any> {
-	const stdinPromise = new Promise<void>((resolve, reject) => {
-		if(cp.stdin) {
-			cp.stdin.on("error", reject);
-		}
-		if(cp.stdin && stdin !== undefined) {
-			const stdinStream = stdin.pipe !== undefined ? stdin : intoStream(stdin);
-			stdinStream.on("error", reject);
-			cp.stdin.on("finish", () => resolve());
-			stdinStream.pipe(cp.stdin);
-		} else {
-			if(cp.stdin) {
-				cp.stdin.end();
-			}
-			resolve();
-		}
-	});
+	if((stdin === undefined || stdin === null) && cp.stdin !== null) {
+		cp.stdin.end();
+	}
+
+	let stdinPromise: Promise<void>;
+	if(stdin === null || stdin === undefined || cp.stdin === null) {
+		stdinPromise = Promise.resolve();
+	} else {
+		stdinPromise = promisify(stream.pipeline)((typeof stdin.pipe === "function" ? stdin : intoStream(stdin)), cp.stdin);
+	}
 
 	const stdoutPromise: Promise<null | string | Buffer> =
 		cp.stdout === null ? Promise.resolve(null) :
