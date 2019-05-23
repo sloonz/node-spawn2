@@ -293,11 +293,7 @@ class ChildProcessTransform extends stream.Duplex implements NodeJS.ReadWriteStr
 	 */
 	// tslint:disable-next-line
 	public _write(chunk: any, encoding: string, cb: (error?: Error | null) => void): void {
-		if(this.stdin.write(chunk, encoding)) {
-			cb(null);
-		} else {
-			this.stdin.once("drain", () => cb(null));
-		}
+		this.stdin.write(chunk, encoding, cb);
 	}
 
 	// tslint:disable-next-line
