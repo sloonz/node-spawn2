@@ -1,6 +1,6 @@
 {
   "name": "spawn2",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Promisified and higher-level spawn",
   "repository": "sloonz/node-spawn2",
   "main": "dist/index.js",
@@ -29,18 +29,18 @@
   "license": "ISC",
   "dependencies": {
     "get-stream": "^5.1.0",
-    "into-stream": "^5.1.0"
+    "into-stream": "^5.1.1"
   },
   "devDependencies": {
     "@types/get-stream": "^3.0.2",
     "@types/into-stream": "^3.1.1",
-    "@types/node": "^12.6.2",
-    "ava": "^2.2.0",
-    "jsdoc-to-markdown": "^5.0.0",
+    "@types/node": "^12.12.14",
+    "ava": "^2.4.0",
+    "jsdoc-to-markdown": "^5.0.3",
     "marked": "^0.7.0",
-    "tsd": "^0.7.4",
-    "tslint": "^5.18.0",
-    "typescript": "^3.5.3"
+    "tsd": "^0.11.0",
+    "tslint": "^5.20.1",
+    "typescript": "^3.7.2"
   },
   "tsd": {
     "directory": "src"
