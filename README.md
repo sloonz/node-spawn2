@@ -1,3 +1,7 @@
+# Deprecation Notice
+
+Please use execa instead
+
 # spawn2
 
 <code>const { communicate, execute, spawn, wait } = require('spawn2');</code>
